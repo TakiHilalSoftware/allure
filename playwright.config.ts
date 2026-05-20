@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const BASE_URL = process.env.BASE_URL || 'https://allure-playground.vercel.app';
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -15,14 +17,14 @@ export default defineConfig({
         suiteTitle: false,
         environmentInfo: {
           framework: 'Playwright',
-          target_url: 'https://allure-playground.vercel.app/',
+          target_url: BASE_URL,
           node_version: process.version,
         },
       },
     ],
   ],
   use: {
-    baseURL: 'https://allure-playground.vercel.app/',
+    baseURL: BASE_URL,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',
