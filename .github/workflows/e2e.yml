@@ -44,14 +44,12 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-          cache-dependency-path: 'allure-playwright-tests/pnpm-lock.yaml'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       - name: Install dependencies
-        working-directory: allure-playwright-tests
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright Browsers
-        working-directory: allure-playwright-tests
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Wait for deployment to be ready
@@ -69,7 +67,6 @@ jobs:
           exit 1
 
       - name: Run Playwright E2E tests
-        working-directory: allure-playwright-tests
         run: pnpm test
         env:
           BASE_URL: ${{ steps.url.outputs.url }}
@@ -83,7 +80,6 @@ jobs:
 
       - name: Generate Allure Report
         if: always()
-        working-directory: allure-playwright-tests
         run: pnpm exec allure generate allure-results --clean -o allure-report
 
       - name: Publish to GitHub Pages
@@ -95,15 +91,15 @@ jobs:
           git init
           git checkout -b gh-pages
           git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-
+          
           # 2. Try to pull existing gh-pages history if it exists
           git fetch origin gh-pages && git reset --hard origin/gh-pages || echo "Branch gh-pages does not exist yet. Starting fresh."
           cd ..
 
           # 3. Copy reports to the gh-pages repository
-          cp -r allure-playwright-tests/allure-report gh-pages/${{ github.run_number }}
+          cp -r allure-report gh-pages/${{ github.run_number }}
           rm -rf gh-pages/latest
-          cp -r allure-playwright-tests/allure-report gh-pages/latest
+          cp -r allure-report gh-pages/latest
 
           # 4. Generate historical directory listing
           cd gh-pages
